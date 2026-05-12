@@ -13,3 +13,4 @@ C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Applicat
 C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\refint\Procurement.Application.dll
 C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\Procurement.Application.pdb
 C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\ref\Procurement.Application.dll
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\Procurement.Application.sourcelink.json

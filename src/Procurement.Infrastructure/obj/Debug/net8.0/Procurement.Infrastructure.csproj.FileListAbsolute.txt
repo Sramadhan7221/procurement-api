@@ -17,3 +17,4 @@ C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Infrastr
 C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Infrastructure\obj\Debug\net8.0\Procurement.Infrastructure.pdb
 C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Infrastructure\obj\Debug\net8.0\Procurement.Infrastructure.genruntimeconfig.cache
 C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Infrastructure\obj\Debug\net8.0\ref\Procurement.Infrastructure.dll
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Infrastructure\obj\Debug\net8.0\Procurement.Infrastructure.sourcelink.json
