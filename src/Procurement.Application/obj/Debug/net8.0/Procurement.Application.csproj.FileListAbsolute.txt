@@ -1,0 +1,15 @@
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\Procurement.Application.csproj.AssemblyReference.cache
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\Procurement.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\Procurement.Application.AssemblyInfoInputs.cache
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\Procurement.Application.AssemblyInfo.cs
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\Procurement.Application.csproj.CoreCompileInputs.cache
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\bin\Debug\net8.0\Procurement.Application.deps.json
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\bin\Debug\net8.0\Procurement.Application.dll
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\bin\Debug\net8.0\Procurement.Application.pdb
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\bin\Debug\net8.0\Procurement.Domain.dll
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\bin\Debug\net8.0\Procurement.Domain.pdb
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\Procurem.2B6BC217.Up2Date
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\Procurement.Application.dll
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\refint\Procurement.Application.dll
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\Procurement.Application.pdb
+C:\Users\srama\OneDrive\Documents\tugas\procurement-api\src\Procurement.Application\obj\Debug\net8.0\ref\Procurement.Application.dll
