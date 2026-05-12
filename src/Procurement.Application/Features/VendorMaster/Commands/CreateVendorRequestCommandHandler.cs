@@ -20,7 +20,7 @@ public class CreateVendorRequestCommandHandler
         CreateVendorRequestCommand request,
         CancellationToken cancellationToken)
     {
-        var vendor = new Procurement.Domain.Entities.Vendor
+        var vendor = new Domain.Entities.Vendor
         {
             Name = request.Name,
             ContactEmail = request.ContactEmail,

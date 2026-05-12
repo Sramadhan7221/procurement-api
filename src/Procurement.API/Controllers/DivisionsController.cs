@@ -1,20 +1,20 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Procurement.Application.Common;
-using Procurement.Application.Features.VendorMaster.Commands;
-using Procurement.Application.Features.VendorMaster.Commands.UpdateVendorRequest;
-using Procurement.Application.Features.VendorMaster.Queries.GetVendorById;
-using Procurement.Application.Features.VendorMaster.Queries.GetVendorDatatable;
+using Procurement.Application.Features.DivisionMaster.Commands;
+using Procurement.Application.Features.DivisionMaster.Commands.UpdateDivisionRequest;
+using Procurement.Application.Features.DivisionMaster.Queries.GetDivisionById;
+using Procurement.Application.Features.DivisionMaster.Queries.GetDivisionDatatable;
 
 namespace Procurement.API.Controllers;
 
 [ApiController]
-[Route("api/vendors")]
-public class VendorsController : ControllerBase
+[Route("api/Divisions")]
+public class DivisionsController : ControllerBase
 {
     private readonly ISender _sender;
 
-    public VendorsController(ISender sender)
+    public DivisionsController(ISender sender)
     {
         _sender = sender;
     }
@@ -23,7 +23,7 @@ public class VendorsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(
-        [FromBody] CreateVendorRequestCommand command,
+        [FromBody] CreateDivisionRequestCommand command,
         CancellationToken cancellationToken)
     {
         var result = await _sender.Send(command, cancellationToken);
@@ -41,7 +41,7 @@ public class VendorsController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetVendorByIdQuery(id), cancellationToken);
+        var result = await _sender.Send(new GetDivisionByIdQuery(id), cancellationToken);
 
         if (!result.IsSuccess)
             return BadRequest(new { errors = result.Errors });
@@ -53,7 +53,7 @@ public class VendorsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> update(
-        [FromBody] UpdateVendorRequestCommand command,
+        [FromBody] UpdateDivisionRequestCommand command,
         CancellationToken cancellationToken)
     {
         var result = await _sender.Send(command, cancellationToken);
@@ -71,7 +71,7 @@ public class VendorsController : ControllerBase
         [FromBody] DatatableRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetVendorDatatableQuery(request), cancellationToken);
+        var result = await _sender.Send(new GetDivisionDatatableQuery(request), cancellationToken);
 
         if (!result.IsSuccess)
             return BadRequest(new { errors = result.Errors });
