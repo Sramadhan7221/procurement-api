@@ -12,6 +12,7 @@ public interface IApplicationDbContext
     DbSet<Category> Categories { get; }
     DbSet<Division> Divisions { get; }
     DbSet<Product> Products { get; }
+    DbSet<Vendor> Vendors { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

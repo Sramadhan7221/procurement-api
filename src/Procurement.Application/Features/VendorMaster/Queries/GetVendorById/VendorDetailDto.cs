@@ -1,6 +1,6 @@
-namespace Procurement.Domain.Entities;
+namespace Procurement.Application.Features.VendorMaster.Queries.GetVendorById;
 
-public class Vendor : BaseEntity
+public class VendorDetailDto
 {
     public string Name { get; set; } = null!;
     public string ContactEmail { get; set; } = null!;
