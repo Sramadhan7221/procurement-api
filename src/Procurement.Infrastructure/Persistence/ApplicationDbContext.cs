@@ -10,9 +10,15 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
     public DbSet<Role> Roles => Set<Role>();
+    public DbSet<Menu> Menus => Set<Menu>();
+    public DbSet<RoleMenu> RoleMenus => Set<RoleMenu>();
     public DbSet<User> Users => Set<User>();
     public DbSet<ProcurementRequest> ProcurementRequests => Set<ProcurementRequest>();
     public DbSet<ProcurementItem> ProcurementItems => Set<ProcurementItem>();
+    public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Division> Divisions => Set<Division>();
+    public DbSet<Product> Products => Set<Product>();
+    public DbSet<Vendor> Vendors => Set<Vendor>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
