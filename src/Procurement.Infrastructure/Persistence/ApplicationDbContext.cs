@@ -10,6 +10,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
     public DbSet<Role> Roles => Set<Role>();
+    public DbSet<Menu> Menus => Set<Menu>();
+    public DbSet<RoleMenu> RoleMenus => Set<RoleMenu>();
     public DbSet<User> Users => Set<User>();
     public DbSet<ProcurementRequest> ProcurementRequests => Set<ProcurementRequest>();
     public DbSet<ProcurementItem> ProcurementItems => Set<ProcurementItem>();

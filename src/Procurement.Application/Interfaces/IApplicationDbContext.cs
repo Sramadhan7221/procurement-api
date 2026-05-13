@@ -6,6 +6,8 @@ namespace Procurement.Application.Interfaces;
 public interface IApplicationDbContext
 {
     DbSet<Role> Roles { get; }
+    DbSet<Menu> Menus { get; }
+    DbSet<RoleMenu> RoleMenus { get; }
     DbSet<User> Users { get; }
     DbSet<ProcurementRequest> ProcurementRequests { get; }
     DbSet<ProcurementItem> ProcurementItems { get; }
