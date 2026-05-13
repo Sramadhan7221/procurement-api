@@ -10,7 +10,6 @@ public class ProcurementRequest : BaseEntity
     public decimal TotalPrice { get; set; }
     public ProcurementStatus Status { get; set; } = ProcurementStatus.Draft;
     public Guid CreatedByUserId { get; set; }
-    public DateTime CreatedAt { get; set; }
 
     public User CreatedBy { get; set; } = null!;
     public ICollection<ProcurementItem> Items { get; set; } = new List<ProcurementItem>();

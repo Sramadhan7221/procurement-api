@@ -22,5 +22,19 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .WithMany()
             .HasForeignKey(p => p.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<Vendor>()
+            .WithMany()
+            .HasForeignKey(p => p.VendorId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasIndex(p => p.SKU).IsUnique();
+
+        builder.Property(p => p.CreatedAt).IsRequired();
+        builder.Property(p => p.UpdatedAt);
+        builder.Property(p => p.IsDeleted).HasDefaultValue(false);
+        builder.Property(p => p.DeletedAt);
+        builder.HasQueryFilter(p => !p.IsDeleted);
     }
 }

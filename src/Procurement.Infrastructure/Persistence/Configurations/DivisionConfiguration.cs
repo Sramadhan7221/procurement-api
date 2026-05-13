@@ -11,5 +11,10 @@ public class DivisionConfiguration : IEntityTypeConfiguration<Division>
         builder.ToTable("Divisions");
         builder.HasKey(d => d.Id);
         builder.Property(d => d.Name).IsRequired().HasMaxLength(100);
+        builder.Property(d => d.CreatedAt).IsRequired();
+        builder.Property(d => d.UpdatedAt);
+        builder.Property(d => d.IsDeleted).HasDefaultValue(false);
+        builder.Property(d => d.DeletedAt);
+        builder.HasQueryFilter(d => !d.IsDeleted);
     }
 }
