@@ -15,6 +15,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<ProcurementRequest> ProcurementRequests => Set<ProcurementRequest>();
     public DbSet<ProcurementItem> ProcurementItems => Set<ProcurementItem>();
+    public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Division> Divisions => Set<Division>();
     public DbSet<Product> Products => Set<Product>();

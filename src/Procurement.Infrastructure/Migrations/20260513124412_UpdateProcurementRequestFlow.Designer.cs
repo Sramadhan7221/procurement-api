@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Procurement.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Procurement.Infrastructure.Persistence;
 namespace Procurement.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260513124412_UpdateProcurementRequestFlow")]
+    partial class UpdateProcurementRequestFlow
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,58 +83,6 @@ namespace Procurement.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Divisions", (string)null);
-                });
-
-            modelBuilder.Entity("Procurement.Domain.Entities.Invoice", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<string>("AttachmentPath")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("InvoiceNumber")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("ProcurementRequestId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InvoiceNumber")
-                        .IsUnique();
-
-                    b.HasIndex("ProcurementRequestId")
-                        .IsUnique();
-
-                    b.ToTable("Invoices", (string)null);
                 });
 
             modelBuilder.Entity("Procurement.Domain.Entities.Menu", b =>
@@ -492,17 +443,6 @@ namespace Procurement.Infrastructure.Migrations
                     b.ToTable("Vendors", (string)null);
                 });
 
-            modelBuilder.Entity("Procurement.Domain.Entities.Invoice", b =>
-                {
-                    b.HasOne("Procurement.Domain.Entities.ProcurementRequest", "ProcurementRequest")
-                        .WithOne("Invoice")
-                        .HasForeignKey("Procurement.Domain.Entities.Invoice", "ProcurementRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProcurementRequest");
-                });
-
             modelBuilder.Entity("Procurement.Domain.Entities.Menu", b =>
                 {
                     b.HasOne("Procurement.Domain.Entities.Menu", "ParentMenu")
@@ -602,8 +542,6 @@ namespace Procurement.Infrastructure.Migrations
 
             modelBuilder.Entity("Procurement.Domain.Entities.ProcurementRequest", b =>
                 {
-                    b.Navigation("Invoice");
-
                     b.Navigation("Items");
                 });
 

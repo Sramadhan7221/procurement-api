@@ -1,7 +1,9 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Procurement.Application.Common;
 using Procurement.Application.Interfaces;
 using Procurement.Domain.Entities;
+using Procurement.Domain.Exceptions;
 
 namespace Procurement.Application.Features.ProcurementRequests.Commands.CreateProcurementRequest;
 
@@ -23,6 +25,16 @@ public class CreateProcurementRequestCommandHandler
         CreateProcurementRequestCommand request,
         CancellationToken cancellationToken)
     {
+        var user = await _context.Users
+            .Include(u => u.Role)
+            .FirstOrDefaultAsync(u => u.Id == request.CreatedByUserId, cancellationToken);
+
+        if (user is null)
+            throw new NotFoundException(nameof(user), request.CreatedByUserId);
+
+        if (user.Role.Name != "Staff")
+            throw new DomainException("Only Staff users can create procurement requests.");
+
         var items = request.Items.Select(i => new ProcurementItem
         {
             ItemName = i.ItemName,

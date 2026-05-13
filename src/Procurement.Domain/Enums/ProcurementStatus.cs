@@ -2,8 +2,12 @@ namespace Procurement.Domain.Enums;
 
 public enum ProcurementStatus
 {
-    Draft = 0,
-    Pending = 1,
-    Approved = 2,
-    Rejected = 3
+    RequestCreated = 1,
+    ApproveByManager = 2,
+    RejectByManager = 3,
+    ApproveByAdmin = 4,
+    RejectByAdmin = 5,
+    InOrderByAdmin = 6,
+    OrderReceived = 7,
+    Completed = 8
 }

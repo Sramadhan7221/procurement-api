@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Procurement.Domain\Procurement.Domain.csproj" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>

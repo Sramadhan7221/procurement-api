@@ -10,5 +10,14 @@ public class ProcurementRequestDetailDto
     public Guid CreatedByUserId { get; set; }
     public string CreatedByName { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+
+    public string? ManagerComment { get; set; }
+    public Guid? ManagerReviewedByUserId { get; set; }
+    public string? ManagerReviewedByName { get; set; }
+
+    public string? AdminComment { get; set; }
+    public Guid? AdminReviewedByUserId { get; set; }
+    public string? AdminReviewedByName { get; set; }
+
     public List<ProcurementItemDto> Items { get; set; } = new();
 }
