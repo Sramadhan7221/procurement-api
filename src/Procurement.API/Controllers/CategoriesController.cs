@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Procurement.Application.Common;
 using Procurement.Application.Features.CategoryMaster.Commands;
+using Procurement.Application.Features.CategoryMaster.Commands.DeleteCategory;
 using Procurement.Application.Features.CategoryMaster.Commands.UpdateCategoryRequest;
 using Procurement.Application.Features.CategoryMaster.Queries.GetCategoryById;
 using Procurement.Application.Features.CategoryMaster.Queries.GetCategoryByName;
@@ -40,21 +41,34 @@ public class CategoriesController : BaseApiController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByName(
-        [FromQuery] string name,
+        [FromQuery] string? name,
         CancellationToken cancellationToken)
     {
         var result = await Sender.Send(new GetCategoryByNameQuery(name), cancellationToken);
         return ApiOk(result);
     }
 
-    [HttpPut]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
+        Guid id,
         [FromBody] UpdateCategoryRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await Sender.Send(command, cancellationToken);
+        var result = await Sender.Send(command with { Id = id }, cancellationToken);
+        return ApiOk(result);
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var result = await Sender.Send(new DeleteCategoryCommand(id), cancellationToken);
         return ApiOk(result);
     }
 

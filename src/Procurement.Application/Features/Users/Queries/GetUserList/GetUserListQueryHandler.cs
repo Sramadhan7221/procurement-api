@@ -20,11 +20,13 @@ public class GetUserListQueryHandler
         CancellationToken cancellationToken)
     {
         var UserList = await _context.Users
+            .Include(u => u.Role)
             .Where(u => u.IsDeleted == false)
             .Select(u => new UserDto
             {
                 Id = u.Id,
                 Name = u.Name,
+                RoleName = u.Role.Name,
                 Role = u.RoleId
             })
             .ToListAsync(cancellationToken);

@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Procurement.Application.Common;
 
 namespace Procurement.Application.Features.ProductMaster.Commands;
@@ -10,6 +11,7 @@ public record CreateProductRequestCommand : IRequest<Result<Guid>>
     public Guid CategoryId { get; init; }
     public decimal BasePrice { get; init; }
     public string UoM { get; init; } = string.Empty;
-    public string? MetaData { get; init; }
+    public string? Detail { get; init; }
+    public IFormFile? ProductImage { get; init; }
     public Guid? VendorId { get; init; }
 }

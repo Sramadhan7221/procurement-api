@@ -5,6 +5,7 @@ using Procurement.Application.Features.ProcurementRequests.Commands.CreateProcur
 using Procurement.Application.Features.ProcurementRequests.Commands.ManagerReviewProcurementRequest;
 using Procurement.Application.Features.ProcurementRequests.Commands.UpdateProcurementProgress;
 using Procurement.Application.Features.ProcurementRequests.Queries.GetProcurementRequestById;
+using Procurement.Application.Features.ProcurementRequests.Queries.GetProcurementRequestDatatable;
 
 namespace Procurement.API.Controllers;
 
@@ -12,6 +13,21 @@ namespace Procurement.API.Controllers;
 public class ProcurementRequestsController : BaseApiController
 {
     public ProcurementRequestsController(ISender sender) : base(sender) { }
+
+    /// <summary>
+    /// Admin and Manager only. Returns a paginated datatable of procurement requests.
+    /// </summary>
+    [HttpPost("datatable")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Datatable(
+        [FromBody] GetProcurementRequestDatatableQuery query,
+        CancellationToken cancellationToken)
+    {
+        var result = await Sender.Send(query, cancellationToken);
+        return ApiOk(result);
+    }
 
     /// <summary>
     /// Staff only. Creates a new procurement request with status "Request Created".

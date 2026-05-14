@@ -14,10 +14,11 @@ public class ProductsController : BaseApiController
     public ProductsController(ISender sender) : base(sender) { }
 
     [HttpPost]
+    [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(
-        [FromBody] CreateProductRequestCommand command,
+        [FromForm] CreateProductRequestCommand command,
         CancellationToken cancellationToken)
     {
         var result = await Sender.Send(command, cancellationToken);
@@ -25,12 +26,13 @@ public class ProductsController : BaseApiController
     }
 
     [HttpPut("{id:guid}")]
+    [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
         Guid id,
-        [FromBody] UpdateProductRequestCommand command,
+        [FromForm] UpdateProductRequestCommand command,
         CancellationToken cancellationToken)
     {
         var result = await Sender.Send(command with { Id = id }, cancellationToken);

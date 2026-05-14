@@ -4,4 +4,4 @@ using Procurement.Application.Common;
 namespace Procurement.Application.Features.ProductMaster.Queries.GetProductDatatable;
 
 public record GetProductDatatableQuery(ProductDatatableRequest Request)
-    : IRequest<Result<ProductDatatableResponse<ProductViewModel>>>;
+    : IRequest<Result<DatatableResponse<ProductViewModel>>>;
