@@ -1,3 +1,5 @@
+using Procurement.Domain.Enums;
+
 namespace Procurement.Application.Features.ProcurementRequests.Queries.GetProcurementRequestDatatable;
 
 public class ProcurementRequestListItemDto
@@ -6,8 +8,9 @@ public class ProcurementRequestListItemDto
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public decimal TotalPrice { get; set; }
-    public string Status { get; set; } = string.Empty;
+    public ProcurementStatus Status { get; set; }
     public Guid CreatedByUserId { get; set; }
     public string CreatedByName { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    public string RequestDate { get; set; } = "-";
 }

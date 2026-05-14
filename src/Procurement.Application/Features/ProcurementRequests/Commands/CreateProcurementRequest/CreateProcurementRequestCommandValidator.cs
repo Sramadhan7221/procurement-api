@@ -24,6 +24,9 @@ public class CreateProcurementRequestCommandValidator : AbstractValidator<Create
             item.RuleFor(i => i.ItemName)
                 .NotEmpty().WithMessage("Item name is required.");
 
+            item.RuleFor(i => i.UoM)
+                .NotEmpty().WithMessage("Unit Of Measurement is required.");
+
             item.RuleFor(i => i.Quantity)
                 .GreaterThan(0).WithMessage("Quantity must be greater than 0.");
 

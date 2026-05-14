@@ -36,10 +36,11 @@ public class GetProcurementRequestByIdQueryHandler
             Title = entity.Title,
             Description = entity.Description,
             TotalPrice = entity.TotalPrice,
-            Status = entity.Status.ToString(),
+            Status = entity.Status,
             CreatedByUserId = entity.CreatedByUserId,
             CreatedByName = entity.CreatedBy?.Name ?? string.Empty,
             CreatedAt = entity.CreatedAt,
+            RequestDate = entity.CreatedAt.ToString("dd MMMM yyyy"),
             ManagerComment = entity.ManagerComment,
             ManagerReviewedByUserId = entity.ManagerReviewedByUserId,
             ManagerReviewedByName = entity.ManagerReviewedBy?.Name,
@@ -52,7 +53,8 @@ public class GetProcurementRequestByIdQueryHandler
                 ItemName = i.ItemName,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
-                SubTotal = i.SubTotal
+                SubTotal = i.SubTotal,
+                UoM = i.UoM
             }).ToList()
         };
 

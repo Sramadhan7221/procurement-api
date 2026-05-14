@@ -39,6 +39,11 @@ public class GetProductDatatableQueryHandler
             query = query.Where(p => p.SKU.Contains(term) || p.Name.Contains(term));
         }
 
+        if(req.CategoryId != null)
+        {
+            query = query.Where(p => p.CategoryId == req.CategoryId);
+        }
+
         var totalCount = await query.CountAsync(cancellationToken);
 
         query = ApplySort(query, req.SortColumn, req.SortDirection);

@@ -39,7 +39,8 @@ public class CreateProcurementRequestCommandHandler
         {
             ItemName = i.ItemName,
             Quantity = i.Quantity,
-            UnitPrice = i.UnitPrice
+            UnitPrice = i.UnitPrice,
+            UoM = i.UoM
         }).ToList();
 
         var procurementRequest = new ProcurementRequest

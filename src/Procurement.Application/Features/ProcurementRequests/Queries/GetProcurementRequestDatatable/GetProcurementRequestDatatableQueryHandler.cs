@@ -58,10 +58,11 @@ public class GetProcurementRequestDatatableQueryHandler
                 Title = r.Title,
                 Description = r.Description,
                 TotalPrice = r.TotalPrice,
-                Status = r.Status.ToString(),
+                Status = r.Status,
                 CreatedByUserId = r.CreatedByUserId,
                 CreatedByName = r.CreatedBy!.Name,
-                CreatedAt = r.CreatedAt
+                CreatedAt = r.CreatedAt,
+                RequestDate = r.CreatedAt.ToString("dd MMMM yyyy")
             })
             .ToListAsync(cancellationToken);
 
