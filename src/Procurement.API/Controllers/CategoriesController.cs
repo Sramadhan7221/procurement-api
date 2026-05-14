@@ -9,16 +9,10 @@ using Procurement.Application.Features.CategoryMaster.Queries.GetCategoryDatatab
 
 namespace Procurement.API.Controllers;
 
-[ApiController]
 [Route("api/Categories")]
-public class CategoriesController : ControllerBase
+public class CategoriesController : BaseApiController
 {
-    private readonly ISender _sender;
-
-    public CategoriesController(ISender sender)
-    {
-        _sender = sender;
-    }
+    public CategoriesController(ISender sender) : base(sender) { }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -27,12 +21,8 @@ public class CategoriesController : ControllerBase
         [FromBody] CreateCategoryRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return StatusCode(StatusCodes.Status201Created, new { message = result.Message });
+        var result = await Sender.Send(command, cancellationToken);
+        return ApiCreated(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -42,12 +32,8 @@ public class CategoriesController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetCategoryByIdQuery(id), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetCategoryByIdQuery(id), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpGet]
@@ -57,27 +43,19 @@ public class CategoriesController : ControllerBase
         [FromQuery] string name,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetCategoryByNameQuery(name), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetCategoryByNameQuery(name), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> update(
+    public async Task<IActionResult> Update(
         [FromBody] UpdateCategoryRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+        var result = await Sender.Send(command, cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpPost("datatable")]
@@ -87,11 +65,7 @@ public class CategoriesController : ControllerBase
         [FromBody] DatatableRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetCategoryDatatableQuery(request), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetCategoryDatatableQuery(request), cancellationToken);
+        return ApiOk(result);
     }
 }

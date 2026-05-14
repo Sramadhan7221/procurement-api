@@ -9,16 +9,10 @@ using Procurement.Application.Features.MenuMaster.Queries.GetMenuDatatable;
 
 namespace Procurement.API.Controllers;
 
-[ApiController]
 [Route("api/menus")]
-public class MenusController : ControllerBase
+public class MenusController : BaseApiController
 {
-    private readonly ISender _sender;
-
-    public MenusController(ISender sender)
-    {
-        _sender = sender;
-    }
+    public MenusController(ISender sender) : base(sender) { }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -27,12 +21,8 @@ public class MenusController : ControllerBase
         [FromBody] CreateMenuRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return StatusCode(StatusCodes.Status201Created, new { message = result.Message });
+        var result = await Sender.Send(command, cancellationToken);
+        return ApiCreated(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -42,12 +32,8 @@ public class MenusController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetMenuByIdQuery(id), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetMenuByIdQuery(id), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpPut("{id:guid}")]
@@ -59,12 +45,8 @@ public class MenusController : ControllerBase
         [FromBody] UpdateMenuRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command with { Id = id }, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+        var result = await Sender.Send(command with { Id = id }, cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpDelete("{id:guid}")]
@@ -74,12 +56,8 @@ public class MenusController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new DeleteMenuCommand(id), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+        var result = await Sender.Send(new DeleteMenuCommand(id), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpPost("datatable")]
@@ -89,11 +67,7 @@ public class MenusController : ControllerBase
         [FromBody] DatatableRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetMenuDatatableQuery(request), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetMenuDatatableQuery(request), cancellationToken);
+        return ApiOk(result);
     }
 }

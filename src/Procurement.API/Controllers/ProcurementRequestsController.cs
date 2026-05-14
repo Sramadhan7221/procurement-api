@@ -8,16 +8,10 @@ using Procurement.Application.Features.ProcurementRequests.Queries.GetProcuremen
 
 namespace Procurement.API.Controllers;
 
-[ApiController]
 [Route("api/procurement-requests")]
-public class ProcurementRequestsController : ControllerBase
+public class ProcurementRequestsController : BaseApiController
 {
-    private readonly ISender _sender;
-
-    public ProcurementRequestsController(ISender sender)
-    {
-        _sender = sender;
-    }
+    public ProcurementRequestsController(ISender sender) : base(sender) { }
 
     /// <summary>
     /// Staff only. Creates a new procurement request with status "Request Created".
@@ -30,15 +24,8 @@ public class ProcurementRequestsController : ControllerBase
         [FromBody] CreateProcurementRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = result.Data },
-            new { id = result.Data, message = result.Message });
+        var result = await Sender.Send(command, cancellationToken);
+        return ApiCreatedAt(result, nameof(GetById), new { id = result.Data });
     }
 
     /// <summary>
@@ -51,12 +38,8 @@ public class ProcurementRequestsController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetProcurementRequestByIdQuery(id), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetProcurementRequestByIdQuery(id), cancellationToken);
+        return ApiOk(result);
     }
 
     /// <summary>
@@ -72,13 +55,8 @@ public class ProcurementRequestsController : ControllerBase
         [FromBody] ManagerReviewProcurementRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var mergedCommand = command with { Id = id };
-        var result = await _sender.Send(mergedCommand, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+        var result = await Sender.Send(command with { Id = id }, cancellationToken);
+        return ApiOk(result);
     }
 
     /// <summary>
@@ -94,13 +72,8 @@ public class ProcurementRequestsController : ControllerBase
         [FromBody] AdminReviewProcurementRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var mergedCommand = command with { Id = id };
-        var result = await _sender.Send(mergedCommand, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+        var result = await Sender.Send(command with { Id = id }, cancellationToken);
+        return ApiOk(result);
     }
 
     /// <summary>
@@ -116,12 +89,7 @@ public class ProcurementRequestsController : ControllerBase
         [FromBody] UpdateProcurementProgressCommand command,
         CancellationToken cancellationToken)
     {
-        var mergedCommand = command with { Id = id };
-        var result = await _sender.Send(mergedCommand, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+        var result = await Sender.Send(command with { Id = id }, cancellationToken);
+        return ApiOk(result);
     }
 }

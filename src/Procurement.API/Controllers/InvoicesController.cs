@@ -1,21 +1,16 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Procurement.Application.Common;
 using Procurement.Application.Features.Invoices.Commands.CreateInvoice;
 using Procurement.Application.Features.Invoices.Queries.GetInvoiceById;
 using Procurement.Application.Features.Invoices.Queries.GetInvoicesDatatable;
 
 namespace Procurement.API.Controllers;
 
-[ApiController]
 [Route("api/invoices")]
-public class InvoicesController : ControllerBase
+public class InvoicesController : BaseApiController
 {
-    private readonly ISender _sender;
-
-    public InvoicesController(ISender sender)
-    {
-        _sender = sender;
-    }
+    public InvoicesController(ISender sender) : base(sender) { }
 
     /// <summary>
     /// Create an invoice with optional file attachment. Requires ProcurementRequest status = ApproveByAdmin.
@@ -29,15 +24,8 @@ public class InvoicesController : ControllerBase
         [FromForm] CreateInvoiceCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = result.Data },
-            new { id = result.Data, message = result.Message });
+        var result = await Sender.Send(command, cancellationToken);
+        return ApiCreatedAt(result, nameof(GetById), new { id = result.Data });
     }
 
     /// <summary>
@@ -48,17 +36,17 @@ public class InvoicesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetInvoiceByIdQuery(id), cancellationToken);
+        var result = await Sender.Send(new GetInvoiceByIdQuery(id), cancellationToken);
 
         if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
+            return ApiOk(result);
 
         var dto = result.Data!;
         var attachmentUrl = dto.AttachmentPath is not null
             ? $"{Request.Scheme}://{Request.Host}{dto.AttachmentPath}"
             : null;
 
-        return Ok(new
+        var enriched = Result<object>.Success(new
         {
             dto.Id,
             dto.ProcurementRequestId,
@@ -69,7 +57,9 @@ public class InvoicesController : ControllerBase
             AttachmentUrl = attachmentUrl,
             dto.CreatedAt,
             dto.UpdatedAt
-        });
+        }, result.Message);
+
+        return ApiOk(enriched);
     }
 
     /// <summary>
@@ -81,7 +71,7 @@ public class InvoicesController : ControllerBase
         [FromBody] GetInvoicesDatatableQuery query,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(query, cancellationToken);
+        var result = await Sender.Send(query, cancellationToken);
 
         var baseUrl = $"{Request.Scheme}://{Request.Host}";
         var data = result.Data.Select(i => new
@@ -96,12 +86,14 @@ public class InvoicesController : ControllerBase
             i.CreatedAt
         }).ToList();
 
-        return Ok(new
+        var enriched = Result<object>.Success(new
         {
             result.Draw,
             result.RecordsTotal,
             result.RecordsFiltered,
             Data = data
         });
+
+        return ApiOk(enriched);
     }
 }

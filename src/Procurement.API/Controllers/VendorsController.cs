@@ -8,16 +8,10 @@ using Procurement.Application.Features.VendorMaster.Queries.GetVendorDatatable;
 
 namespace Procurement.API.Controllers;
 
-[ApiController]
 [Route("api/vendors")]
-public class VendorsController : ControllerBase
+public class VendorsController : BaseApiController
 {
-    private readonly ISender _sender;
-
-    public VendorsController(ISender sender)
-    {
-        _sender = sender;
-    }
+    public VendorsController(ISender sender) : base(sender) { }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -26,12 +20,8 @@ public class VendorsController : ControllerBase
         [FromBody] CreateVendorRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return StatusCode(StatusCodes.Status201Created, new { message = result.Message });
+        var result = await Sender.Send(command, cancellationToken);
+        return ApiCreated(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -41,27 +31,19 @@ public class VendorsController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetVendorByIdQuery(id), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetVendorByIdQuery(id), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> update(
+    public async Task<IActionResult> Update(
         [FromBody] UpdateVendorRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+        var result = await Sender.Send(command, cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpPost("datatable")]
@@ -71,11 +53,7 @@ public class VendorsController : ControllerBase
         [FromBody] DatatableRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetVendorDatatableQuery(request), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetVendorDatatableQuery(request), cancellationToken);
+        return ApiOk(result);
     }
 }
