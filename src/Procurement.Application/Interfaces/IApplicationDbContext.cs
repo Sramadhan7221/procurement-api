@@ -17,6 +17,13 @@ public interface IApplicationDbContext
     DbSet<Division> Divisions { get; }
     DbSet<Product> Products { get; }
     DbSet<Vendor> Vendors { get; }
+    DbSet<PurchaseOrder> PurchaseOrders { get; }
+    DbSet<GoodsReceipt> GoodsReceipts { get; }
+    DbSet<GoodsReceiptItem> GoodsReceiptItems { get; }
+    DbSet<ProcurementInvoice> ProcurementInvoices { get; }
+    DbSet<ProcurementInvoiceItem> ProcurementInvoiceItems { get; }
+    DbSet<ProcurementPayment> ProcurementPayments { get; }
+    DbSet<ProcurementAuditTrail> ProcurementAuditTrails { get; }
 
     DatabaseFacade Database { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

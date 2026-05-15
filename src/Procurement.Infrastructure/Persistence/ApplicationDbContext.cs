@@ -20,6 +20,13 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Division> Divisions => Set<Division>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Vendor> Vendors => Set<Vendor>();
+    public DbSet<PurchaseOrder> PurchaseOrders => Set<PurchaseOrder>();
+    public DbSet<GoodsReceipt> GoodsReceipts => Set<GoodsReceipt>();
+    public DbSet<GoodsReceiptItem> GoodsReceiptItems => Set<GoodsReceiptItem>();
+    public DbSet<ProcurementInvoice> ProcurementInvoices => Set<ProcurementInvoice>();
+    public DbSet<ProcurementInvoiceItem> ProcurementInvoiceItems => Set<ProcurementInvoiceItem>();
+    public DbSet<ProcurementPayment> ProcurementPayments => Set<ProcurementPayment>();
+    public DbSet<ProcurementAuditTrail> ProcurementAuditTrails => Set<ProcurementAuditTrail>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

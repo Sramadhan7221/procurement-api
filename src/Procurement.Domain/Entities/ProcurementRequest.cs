@@ -86,4 +86,68 @@ public class ProcurementRequest : BaseEntity
         Status = ProcurementStatus.Completed;
         UpdatedAt = DateTime.UtcNow;
     }
+
+    public void PlaceOrder()
+    {
+        if (Status != ProcurementStatus.ApproveByAdmin)
+            throw new DomainException($"Only Admin-approved requests can have a Purchase Order placed. Current status: {Status}.");
+        Status = ProcurementStatus.InOrderByAdmin;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void ConfirmGoodsReceipt()
+    {
+        if (Status != ProcurementStatus.InOrderByAdmin)
+            throw new DomainException($"Only 'In Order By Admin' requests can have goods receipt confirmed. Current status: {Status}.");
+        Status = ProcurementStatus.OrderReceived;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UploadInvoice()
+    {
+        if (Status != ProcurementStatus.OrderReceived)
+            throw new DomainException($"Only 'Order Received' requests can have an invoice uploaded. Current status: {Status}.");
+        Status = ProcurementStatus.InvoiceUploaded;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void DisputeInvoice()
+    {
+        if (Status != ProcurementStatus.InvoiceUploaded)
+            throw new DomainException($"Only 'Invoice Uploaded' requests can be set to disputed. Current status: {Status}.");
+        Status = ProcurementStatus.InvoiceDisputed;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void ResolveInvoiceDispute()
+    {
+        if (Status != ProcurementStatus.InvoiceDisputed)
+            throw new DomainException($"Only 'Invoice Disputed' requests can have their dispute resolved. Current status: {Status}.");
+        Status = ProcurementStatus.InvoiceUploaded;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void VerifyInvoice()
+    {
+        if (Status != ProcurementStatus.InvoiceUploaded)
+            throw new DomainException($"Only 'Invoice Uploaded' requests can have the invoice verified. Current status: {Status}.");
+        Status = ProcurementStatus.InvoiceVerified;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void ApprovePayment()
+    {
+        if (Status != ProcurementStatus.InvoiceVerified)
+            throw new DomainException($"Only 'Invoice Verified' requests can have payment approved. Current status: {Status}.");
+        Status = ProcurementStatus.PaymentProcessed;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void CompleteProcurement()
+    {
+        if (Status != ProcurementStatus.PaymentProcessed)
+            throw new DomainException($"Only 'Payment Processed' requests can be marked as completed. Current status: {Status}.");
+        Status = ProcurementStatus.Completed;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

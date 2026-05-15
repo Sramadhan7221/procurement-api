@@ -9,5 +9,9 @@ public enum ProcurementStatus
     RejectByAdmin = 5,
     InOrderByAdmin = 6,
     OrderReceived = 7,
-    Completed = 8
+    Completed = 8,
+    InvoiceUploaded = 9,
+    InvoiceDisputed = 10,
+    InvoiceVerified = 11,
+    PaymentProcessed = 12,
 }

@@ -25,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddSingleton<IDateTimeService, DateTimeService>();
         services.AddScoped<IFileService, LocalFileService>();
+        services.AddScoped<IAuditTrailWriter, AuditTrailWriter>();
 
         return services;
     }
