@@ -12,16 +12,10 @@ using Procurement.Application.Features.RoleMenuMaster.Queries.GetMenusByRoleId;
 
 namespace Procurement.API.Controllers;
 
-[ApiController]
 [Route("api/roles")]
-public class RolesController : ControllerBase
+public class RolesController : BaseApiController
 {
-    private readonly ISender _sender;
-
-    public RolesController(ISender sender)
-    {
-        _sender = sender;
-    }
+    public RolesController(ISender sender) : base(sender) { }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -30,12 +24,8 @@ public class RolesController : ControllerBase
         [FromBody] CreateRoleRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return StatusCode(StatusCodes.Status201Created, new { message = result.Message });
+        var result = await Sender.Send(command, cancellationToken);
+        return ApiCreated(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -45,12 +35,8 @@ public class RolesController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetRoleByIdQuery(id), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetRoleByIdQuery(id), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpPut("{id:guid}")]
@@ -62,12 +48,8 @@ public class RolesController : ControllerBase
         [FromBody] UpdateRoleRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command with { Id = id }, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+        var result = await Sender.Send(command with { Id = id }, cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpDelete("{id:guid}")]
@@ -77,12 +59,8 @@ public class RolesController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new DeleteRoleCommand(id), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+        var result = await Sender.Send(new DeleteRoleCommand(id), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpPost("datatable")]
@@ -92,12 +70,8 @@ public class RolesController : ControllerBase
         [FromBody] DatatableRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetRoleDatatableQuery(request), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetRoleDatatableQuery(request), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpGet("{roleId:guid}/menus")]
@@ -107,12 +81,8 @@ public class RolesController : ControllerBase
         Guid roleId,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetMenusByRoleIdQuery(roleId), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetMenusByRoleIdQuery(roleId), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpPost("{roleId:guid}/menus")]
@@ -124,12 +94,8 @@ public class RolesController : ControllerBase
         [FromBody] AssignMenuToRoleCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command with { RoleId = roleId }, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return StatusCode(StatusCodes.Status201Created, new { message = result.Message });
+        var result = await Sender.Send(command with { RoleId = roleId }, cancellationToken);
+        return ApiCreated(result);
     }
 
     [HttpDelete("{roleId:guid}/menus/{menuId:guid}")]
@@ -140,13 +106,9 @@ public class RolesController : ControllerBase
         Guid menuId,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(
+        var result = await Sender.Send(
             new RemoveMenuFromRoleCommand { RoleId = roleId, MenuId = menuId },
             cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+        return ApiOk(result);
     }
 }

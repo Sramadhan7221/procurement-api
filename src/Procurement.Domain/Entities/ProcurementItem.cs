@@ -5,6 +5,7 @@ public class ProcurementItem : BaseEntity
     public Guid ProcurementRequestId { get; set; }
     public string ItemName { get; set; } = string.Empty;
     public int Quantity { get; set; }
+    public string UoM { get; set; } = string.Empty;
     public decimal UnitPrice { get; set; }
 
     public decimal SubTotal => Quantity * UnitPrice;

@@ -23,6 +23,8 @@ public class GetProcurementRequestByIdQueryHandler
         var entity = await _context.ProcurementRequests
             .Include(r => r.Items)
             .Include(r => r.CreatedBy)
+            .Include(r => r.ManagerReviewedBy)
+            .Include(r => r.AdminReviewedBy)
             .FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
 
         if (entity is null)
@@ -34,17 +36,25 @@ public class GetProcurementRequestByIdQueryHandler
             Title = entity.Title,
             Description = entity.Description,
             TotalPrice = entity.TotalPrice,
-            Status = entity.Status.ToString(),
+            Status = entity.Status,
             CreatedByUserId = entity.CreatedByUserId,
             CreatedByName = entity.CreatedBy?.Name ?? string.Empty,
             CreatedAt = entity.CreatedAt,
+            RequestDate = entity.CreatedAt.ToString("dd MMMM yyyy"),
+            ManagerComment = entity.ManagerComment,
+            ManagerReviewedByUserId = entity.ManagerReviewedByUserId,
+            ManagerReviewedByName = entity.ManagerReviewedBy?.Name,
+            AdminComment = entity.AdminComment,
+            AdminReviewedByUserId = entity.AdminReviewedByUserId,
+            AdminReviewedByName = entity.AdminReviewedBy?.Name,
             Items = entity.Items.Select(i => new ProcurementItemDto
             {
                 Id = i.Id,
                 ItemName = i.ItemName,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
-                SubTotal = i.SubTotal
+                SubTotal = i.SubTotal,
+                UoM = i.UoM
             }).ToList()
         };
 

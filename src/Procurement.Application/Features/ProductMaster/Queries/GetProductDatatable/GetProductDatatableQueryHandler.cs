@@ -1,3 +1,4 @@
+using System.Text.Json;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Procurement.Application.Common;
@@ -7,7 +8,7 @@ using Procurement.Domain.Entities;
 namespace Procurement.Application.Features.ProductMaster.Queries.GetProductDatatable;
 
 public class GetProductDatatableQueryHandler
-    : IRequestHandler<GetProductDatatableQuery, Result<ProductDatatableResponse<ProductViewModel>>>
+    : IRequestHandler<GetProductDatatableQuery, Result<DatatableResponse<ProductViewModel>>>
 {
     private static readonly Dictionary<string, Func<IQueryable<Product>, bool, IOrderedQueryable<Product>>> SortMap =
         new(StringComparer.OrdinalIgnoreCase)
@@ -25,7 +26,7 @@ public class GetProductDatatableQueryHandler
         _context = context;
     }
 
-    public async Task<Result<ProductDatatableResponse<ProductViewModel>>> Handle(
+    public async Task<Result<DatatableResponse<ProductViewModel>>> Handle(
         GetProductDatatableQuery request,
         CancellationToken cancellationToken)
     {
@@ -38,6 +39,11 @@ public class GetProductDatatableQueryHandler
             query = query.Where(p => p.SKU.Contains(term) || p.Name.Contains(term));
         }
 
+        if(req.CategoryId != null)
+        {
+            query = query.Where(p => p.CategoryId == req.CategoryId);
+        }
+
         var totalCount = await query.CountAsync(cancellationToken);
 
         query = ApplySort(query, req.SortColumn, req.SortDirection);
@@ -45,34 +51,62 @@ public class GetProductDatatableQueryHandler
         var pageNumber = req.PageNumber < 1 ? 1 : req.PageNumber;
         var pageSize = req.PageSize < 1 ? 10 : req.PageSize;
 
-        var data = await (
+        var rawData = await (
             from p in query.Skip((pageNumber - 1) * pageSize).Take(pageSize)
             join c in _context.Categories on p.CategoryId equals c.Id
             join v in _context.Vendors on p.VendorId equals v.Id into vendors
             from v in vendors.DefaultIfEmpty()
-            select new ProductViewModel
+            select new
+            {
+                p.Id,
+                p.SKU,
+                p.Name,
+                CategoryName = c.Name,
+                p.CategoryId,
+                p.BasePrice,
+                p.UoM,
+                p.MetaData,
+                p.VendorId,
+                VendorName = v.Name,
+                p.CreatedAt
+            }
+        ).ToListAsync(cancellationToken);
+
+        var data = rawData.Select(p =>
+        {
+            string? desc = null, imageUrl = null;
+            if (!string.IsNullOrEmpty(p.MetaData))
+            {
+                var json = JsonDocument.Parse(p.MetaData).RootElement;
+                if (json.TryGetProperty("detail", out var d)) desc = d.GetString();
+                if (json.TryGetProperty("imageUrl", out var u)) imageUrl = u.GetString();
+            }
+            return new ProductViewModel
             {
                 Id           = p.Id,
                 SKU          = p.SKU,
                 Name         = p.Name,
-                CategoryName = c.Name,
+                CategoryId   = p.CategoryId,
+                CategoryName = p.CategoryName,
                 BasePrice    = p.BasePrice,
                 UoM          = p.UoM,
-                MetaData     = p.MetaData,
-                VendorName   = v.Name,
+                Desc         = desc,
+                ImageUrl     = imageUrl,
+                VendorId     = p.VendorId,
+                VendorName   = p.VendorName,
                 CreatedAt    = p.CreatedAt
-            }
-        ).ToListAsync(cancellationToken);
+            };
+        }).ToList();
 
-        var response = new ProductDatatableResponse<ProductViewModel>
+        var response = new DatatableResponse<ProductViewModel>
         {
-            TotalCount  = totalCount,
-            PageNumber  = pageNumber,
-            PageSize    = pageSize,
-            Data        = data
+            Draw            = 1,
+            RecordsTotal    = totalCount,
+            RecordsFiltered = totalCount,
+            Data            = data
         };
 
-        return Result<ProductDatatableResponse<ProductViewModel>>.Success(response);
+        return Result<DatatableResponse<ProductViewModel>>.Success(response);
     }
 
     private static IQueryable<Product> ApplySort(

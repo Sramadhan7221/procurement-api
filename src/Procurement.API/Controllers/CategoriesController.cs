@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Procurement.Application.Common;
 using Procurement.Application.Features.CategoryMaster.Commands;
+using Procurement.Application.Features.CategoryMaster.Commands.DeleteCategory;
 using Procurement.Application.Features.CategoryMaster.Commands.UpdateCategoryRequest;
 using Procurement.Application.Features.CategoryMaster.Queries.GetCategoryById;
 using Procurement.Application.Features.CategoryMaster.Queries.GetCategoryByName;
@@ -9,16 +10,10 @@ using Procurement.Application.Features.CategoryMaster.Queries.GetCategoryDatatab
 
 namespace Procurement.API.Controllers;
 
-[ApiController]
 [Route("api/Categories")]
-public class CategoriesController : ControllerBase
+public class CategoriesController : BaseApiController
 {
-    private readonly ISender _sender;
-
-    public CategoriesController(ISender sender)
-    {
-        _sender = sender;
-    }
+    public CategoriesController(ISender sender) : base(sender) { }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -27,12 +22,8 @@ public class CategoriesController : ControllerBase
         [FromBody] CreateCategoryRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return StatusCode(StatusCodes.Status201Created, new { message = result.Message });
+        var result = await Sender.Send(command, cancellationToken);
+        return ApiCreated(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -42,42 +33,43 @@ public class CategoriesController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetCategoryByIdQuery(id), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetCategoryByIdQuery(id), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByName(
-        [FromQuery] string name,
+        [FromQuery] string? name,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetCategoryByNameQuery(name), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetCategoryByNameQuery(name), cancellationToken);
+        return ApiOk(result);
     }
 
-    [HttpPut]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> update(
+    public async Task<IActionResult> Update(
+        Guid id,
         [FromBody] UpdateCategoryRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
+        var result = await Sender.Send(command with { Id = id }, cancellationToken);
+        return ApiOk(result);
+    }
 
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var result = await Sender.Send(new DeleteCategoryCommand(id), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpPost("datatable")]
@@ -87,11 +79,7 @@ public class CategoriesController : ControllerBase
         [FromBody] DatatableRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetCategoryDatatableQuery(request), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetCategoryDatatableQuery(request), cancellationToken);
+        return ApiOk(result);
     }
 }

@@ -8,47 +8,35 @@ using Procurement.Application.Features.ProductMaster.Queries.GetProductsFiltered
 
 namespace Procurement.API.Controllers;
 
-[ApiController]
 [Route("api/products")]
-public class ProductsController : ControllerBase
+public class ProductsController : BaseApiController
 {
-    private readonly ISender _sender;
-
-    public ProductsController(ISender sender)
-    {
-        _sender = sender;
-    }
+    public ProductsController(ISender sender) : base(sender) { }
 
     [HttpPost]
+    [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(
-        [FromBody] CreateProductRequestCommand command,
+        [FromForm] CreateProductRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return StatusCode(StatusCodes.Status201Created, new { message = result.Message });
+        var result = await Sender.Send(command, cancellationToken);
+        return ApiCreated(result);
     }
 
     [HttpPut("{id:guid}")]
+    [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
         Guid id,
-        [FromBody] UpdateProductRequestCommand command,
+        [FromForm] UpdateProductRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command with { Id = id }, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+        var result = await Sender.Send(command with { Id = id }, cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpDelete("{id:guid}")]
@@ -58,12 +46,8 @@ public class ProductsController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new DeleteProductCommand(id), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+        var result = await Sender.Send(new DeleteProductCommand(id), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpPost("datatable")]
@@ -73,12 +57,8 @@ public class ProductsController : ControllerBase
         [FromBody] ProductDatatableRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetProductDatatableQuery(request), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetProductDatatableQuery(request), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpGet]
@@ -88,13 +68,9 @@ public class ProductsController : ControllerBase
         [FromQuery] Guid? categoryId,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(
+        var result = await Sender.Send(
             new GetProductsFilteredQuery { SKU = sku, CategoryId = categoryId },
             cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        return ApiOk(result);
     }
 }

@@ -2,22 +2,18 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Procurement.Application.Common;
 using Procurement.Application.Features.VendorMaster.Commands;
+using Procurement.Application.Features.VendorMaster.Commands.DeleteVendor;
 using Procurement.Application.Features.VendorMaster.Commands.UpdateVendorRequest;
 using Procurement.Application.Features.VendorMaster.Queries.GetVendorById;
 using Procurement.Application.Features.VendorMaster.Queries.GetVendorDatatable;
+using Procurement.Application.Features.VendorMaster.Queries.GetVendorList;
 
 namespace Procurement.API.Controllers;
 
-[ApiController]
 [Route("api/vendors")]
-public class VendorsController : ControllerBase
+public class VendorsController : BaseApiController
 {
-    private readonly ISender _sender;
-
-    public VendorsController(ISender sender)
-    {
-        _sender = sender;
-    }
+    public VendorsController(ISender sender) : base(sender) { }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -26,12 +22,8 @@ public class VendorsController : ControllerBase
         [FromBody] CreateVendorRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return StatusCode(StatusCodes.Status201Created, new { message = result.Message });
+        var result = await Sender.Send(command, cancellationToken);
+        return ApiCreated(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -41,27 +33,43 @@ public class VendorsController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetVendorByIdQuery(id), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetVendorByIdQuery(id), cancellationToken);
+        return ApiOk(result);
     }
 
-    [HttpPut]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> update(
+    public async Task<IActionResult> Update(
+        Guid id,
         [FromBody] UpdateVendorRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
+        var result = await Sender.Send(command with { Id = id }, cancellationToken);
+        return ApiOk(result);
+    }
 
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var result = await Sender.Send(new DeleteVendorCommand(id), cancellationToken);
+        return ApiOk(result);
+    }
 
-        return Ok(new { message = result.Message });
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetList(
+        [FromQuery] GetVendorListQuery query,
+        CancellationToken cancellationToken)
+    {
+        var result = await Sender.Send(query, cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpPost("datatable")]
@@ -71,11 +79,7 @@ public class VendorsController : ControllerBase
         [FromBody] DatatableRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetVendorDatatableQuery(request), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetVendorDatatableQuery(request), cancellationToken);
+        return ApiOk(result);
     }
 }

@@ -2,22 +2,17 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Procurement.Application.Common;
 using Procurement.Application.Features.DivisionMaster.Commands;
+using Procurement.Application.Features.DivisionMaster.Commands.DeleteDivision;
 using Procurement.Application.Features.DivisionMaster.Commands.UpdateDivisionRequest;
 using Procurement.Application.Features.DivisionMaster.Queries.GetDivisionById;
 using Procurement.Application.Features.DivisionMaster.Queries.GetDivisionDatatable;
 
 namespace Procurement.API.Controllers;
 
-[ApiController]
 [Route("api/Divisions")]
-public class DivisionsController : ControllerBase
+public class DivisionsController : BaseApiController
 {
-    private readonly ISender _sender;
-
-    public DivisionsController(ISender sender)
-    {
-        _sender = sender;
-    }
+    public DivisionsController(ISender sender) : base(sender) { }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -26,12 +21,8 @@ public class DivisionsController : ControllerBase
         [FromBody] CreateDivisionRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return StatusCode(StatusCodes.Status201Created, new { message = result.Message });
+        var result = await Sender.Send(command, cancellationToken);
+        return ApiCreated(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -41,27 +32,32 @@ public class DivisionsController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetDivisionByIdQuery(id), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetDivisionByIdQuery(id), cancellationToken);
+        return ApiOk(result);
     }
 
-    [HttpPut]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> update(
+    public async Task<IActionResult> Update(
+        Guid id,
         [FromBody] UpdateDivisionRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(command, cancellationToken);
+        var result = await Sender.Send(command with { Id = id }, cancellationToken);
+        return ApiOk(result);
+    }
 
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(new { message = result.Message });
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var result = await Sender.Send(new DeleteDivisionCommand(id), cancellationToken);
+        return ApiOk(result);
     }
 
     [HttpPost("datatable")]
@@ -71,11 +67,7 @@ public class DivisionsController : ControllerBase
         [FromBody] DatatableRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetDivisionDatatableQuery(request), cancellationToken);
-
-        if (!result.IsSuccess)
-            return BadRequest(new { errors = result.Errors });
-
-        return Ok(result.Data);
+        var result = await Sender.Send(new GetDivisionDatatableQuery(request), cancellationToken);
+        return ApiOk(result);
     }
 }

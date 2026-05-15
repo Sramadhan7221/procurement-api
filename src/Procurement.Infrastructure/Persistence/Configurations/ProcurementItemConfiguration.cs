@@ -10,6 +10,7 @@ public class ProcurementItemConfiguration : IEntityTypeConfiguration<Procurement
     {
         builder.ToTable("ProcurementItems");
         builder.HasKey(i => i.Id);
+        builder.Property(i => i.UoM).IsRequired().HasMaxLength(50);
         builder.Property(i => i.ItemName).IsRequired().HasMaxLength(200);
         builder.Property(i => i.UnitPrice).HasPrecision(18, 2);
         builder.Ignore(i => i.SubTotal);

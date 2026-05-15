@@ -7,7 +7,7 @@ using Procurement.Domain.Exceptions;
 namespace Procurement.Application.Features.CategoryMaster.Queries.GetCategoryByName;
 
 public class GetCategoryByNameQueryHandler
-    : IRequestHandler<GetCategoryByNameQuery, Result<CategoryDetailDto>>
+    : IRequestHandler<GetCategoryByNameQuery, Result<List<CategoryDetailDto>>>
 {
     private readonly IApplicationDbContext _context;
 
@@ -16,22 +16,27 @@ public class GetCategoryByNameQueryHandler
         _context = context;
     }
 
-    async Task<Result<CategoryDetailDto>> IRequestHandler<GetCategoryByNameQuery, Result<CategoryDetailDto>>.Handle(
+    async Task<Result<List<CategoryDetailDto>>> IRequestHandler<GetCategoryByNameQuery, Result<List<CategoryDetailDto>>>.Handle(
         GetCategoryByNameQuery request,
         CancellationToken cancellationToken)
     {
-        var Category = await _context.Categories
-            .FirstOrDefaultAsync(c => c.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+        var searchTerm = string.IsNullOrEmpty(request.Name) ? string.Empty : request.Name.ToLower();
 
-        if (Category is null)
-            throw new NotFoundException(nameof(Category), request.Name);
+         var categories = _context.Categories
+            .Where(c => c.IsDeleted == false);
 
-        var CategoryDetail = new CategoryDetailDto
+        if(!string.IsNullOrEmpty(request.Name))
         {
-            Id = Category.Id,
-            Name = Category.Name
-        };
+            categories = categories.Where(c => c.Name.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase));
+        }
+        var categoryList = await categories
+            .Select(c => new CategoryDetailDto
+            {
+                Id = c.Id,
+                Name = c.Name
+            })
+            .ToListAsync(cancellationToken);
 
-        return Result<CategoryDetailDto>.Success(CategoryDetail, "Category retrieved successfully.");
+        return Result<List<CategoryDetailDto>>.Success(categoryList, "Categories retrieved successfully.");
     }
 }
